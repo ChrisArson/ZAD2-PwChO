@@ -1,0 +1,57 @@
+version: '3'
+services:
+
+  nginx:
+    # wybranie obrazu
+    image: nginx
+    # ustawienie portw
+    ports:
+      - 6666:80
+    # ustawienie wolumenow
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+      - ./html:/var/www/php
+    # wybranie sieci do podlaczenia
+    networks:
+      - frontend
+      - backend
+
+  php:
+    # wybranie obrazu
+    image: php:8-fpm
+    # ustawienie wolumenow
+    volumes:
+      - ./html:/var/www/php
+    # wybranie sieci do podlaczenia
+    networks:
+      - backend
+
+  mysql:
+    # ustawienie wolumenow
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: 'admin'
+    # ustawienie wolumenow
+    volumes:
+      - ./database:/var/lib/mysql
+    # wybranie sieczi do podlaczenia
+    networks:
+      - backend
+
+  phpmyadmin:
+    # wybranie obrazu
+    image: phpmyadmin/phpmyadmin:latest
+    # podlaczenie z obrazem bazy danych
+    links:
+      - 'mysql:db'
+    # ustawienie portow
+    ports:
+      - 6001:80
+    # wybranie sieci do podlaczenia
+    networks:
+      - backend
+
+    # utworzenie sieci
+networks:
+  frontend:
+  backend:
